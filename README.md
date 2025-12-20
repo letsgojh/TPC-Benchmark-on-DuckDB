@@ -12,7 +12,7 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 - 해당 레포지토리를 clone 합니다
 
     ```bash
-    git clone git@github.com:letsgojh/TPC_H-Benchmark-on-DuckDB.git
+    git clone git@github.com:letsgojh/TPC-Benchmark-on-DuckDB.git
     cd TPC-Benchmark-on-DuckDB
     ```
 
