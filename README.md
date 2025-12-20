@@ -1,4 +1,4 @@
-# TPC-H,TPC-DS Benchmark on DuckDB - Setup Guide**
+# TPC-H,TPC-DS Benchmark on DuckDB - Setup Guide
 
 
 ## Overview
