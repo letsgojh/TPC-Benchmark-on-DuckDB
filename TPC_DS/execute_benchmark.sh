@@ -1,61 +1,62 @@
 #!/bin/bash
+set -e
 
-DBFILE="tpcds_sf${SF}.duckdb"
-fileList=./sample_queries/*.sql
-resPath=./result/
-resName="elapsed_time_$(date +%Y%m%d_%H%M%S).out"
-
-# 인자 체크
-if [[ "$#" -ne 1 || ! "$1" =~ ^[0-9]+$ ]]; then
-  echo
-  echo "Usage: $0 <The number of Iterations>"
-  echo
+# 필수 환경변수 체크
+if [[ -z "$SF" ]]; then
+  echo "ERROR: SF is not set (e.g. SF=30 ./execute_benchmark.sh 20)"
   exit 1
 fi
 
-# result 폴더 생성
-mkdir -p result
+# 인자 체크
+if [[ "$#" -ne 1 || ! "$1" =~ ^[0-9]+$ ]]; then
+  echo "Usage: $0 <Number of Iterations>"
+  exit 1
+fi
 
-echo
+ITER=$1
+DBFILE="tpcds_sf${SF}.duckdb"
+QUERYDIR="./sample_queries_sf${SF}"
+RESULTROOT="./result_sf${SF}"
+LOGNAME="elapsed_time_$(date +%Y%m%d_%H%M%S).out"
 
-for ((repeatCnt=1; repeatCnt <= $1; repeatCnt++))
-do
-    repeatDir="./result/repeat_$repeatCnt"
-    mkdir -p "$repeatDir"
+mkdir -p "$RESULTROOT"
 
-    # repeat_n/log 파일 경로
-    fullPath=$resPath'repeat'$repeatCnt'_'$resName
+# DuckDB lock 사전 방어
+if lsof "$DBFILE" >/dev/null 2>&1; then
+  echo "ERROR: $DBFILE is already in use (duckdb lock detected)"
+  exit 1
+fi
 
-    for file in $fileList
-    do
-        name=$(basename "$file")
-        name=${name%.*}
+# 벤치마크 시작
+for ((r=1; r<=ITER; r++)); do
+  echo "===== Repeat $r / $ITER ====="
 
-        output="${repeatDir}/${name}.out"
+  repeatDir="$RESULTROOT/repeat_$r"
+  mkdir -p "$repeatDir"
+  logFile="$RESULTROOT/repeat${r}_$LOGNAME"
 
-        echo -n "Repeat: ${repeatCnt}/$1, Execution: ${file}"
+  #duckdb를 한 번만 연다
+  for q in "$QUERYDIR"/*.sql; do
+    qname=$(basename "$q" .sql)
+    outfile="$repeatDir/${qname}.out"
 
-        # 시간 측정 시작 — 나노초 변환 (정확)
-        start_time_sec=$(date +%s)
-        start_time_nsec=$(date +%N)
-        start_time=$((10#$start_time_sec*1000000000 + 10#$start_time_nsec))
+    echo -n "Repeat: $r/$ITER, Execution: $qname"
 
-        # DuckDB 실행
-        duckdb "$DBFILE" > "$output" <<EOF
+    start=$(date +%s%N)
+
+    duckdb "$DBFILE" > "$outfile" <<EOF
+.timer on
 .headers on
 .mode column
-$(cat "$file")
+$(cat "$q")
 EOF
 
-        # 시간 측정 끝
-        end_time_sec=$(date +%s)
-        end_time_nsec=$(date +%N)
-        end_time=$((10#$end_time_sec*1000000000 + 10#$end_time_nsec))
-        elapsed=$((10#$end_time - 10#$start_time))
+    end=$(date +%s%N)
+    elapsed=$((end - start))
 
-        echo " (Elapsed: ${elapsed} NanoSec.)"
-        echo
-
-        echo "Repeat: $repeatCnt/$1, Execution Name: $file (Elapsed: $elapsed NanoSec.)" >> "$fullPath"
-    done
+    echo " (Elapsed: ${elapsed} ns)"
+    echo "Repeat: $r/$ITER, Query: $qname, Elapsed: $elapsed ns" >> "$logFile"
+  done
 done
+
+echo "=== Benchmark finished successfully ==="

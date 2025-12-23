@@ -47,9 +47,9 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 | instruction | descript | example |
 |----------|------|--------|
 | make SF= {SF}| duckdb내에 TPC 관련 schema와 query들을 생성합니다.(SF값을 입력하지 않는다면 자동으로 1로 실행됩니다.)| make SF=10 |
-| make queries| duckdb내에 있는 query들을 외부 sample_queries 디렉토리로 옮겨 적습니다. | make queries|
-| make benchmark ITER= {ITER} | benchmarking를 ITER 횟수만큼 반복 실행합니다. 실행된 결과를 기록하여 result 디렉토리 내에 저장합니다. | make benchmark ITER=20 |
-| make parse | result 디렉토리 내에 있는 정보를 excel 파일로 생성합니다. | make SF=10 |
+| make queries SF={SF}| duckdb내에 있는 query들을 외부 sample_queries 디렉토리로 옮겨 적습니다. | make querie SF={SF}|
+| make benchmark SF= {SF} ITER= {ITER} | benchmarking를 ITER 횟수만큼 반복 실행합니다. 실행된 결과를 기록하여 result 디렉토리 내에 저장합니다. | make benchmark SF=30 ITER=20 |
+| make parse SF={SF}| result 디렉토리 내에 있는 정보를 excel 파일로 생성합니다. | make parse SF=10 |
 | make clean| 생성된 sample_queries,result 디렉토리와 excel 파일을 삭제합니다. | make clean |
 
 - make SF=<SF> -> make queries -> make benchmark ITER=<ITER> -> make parse 순으로 실행시키시면됩니다.

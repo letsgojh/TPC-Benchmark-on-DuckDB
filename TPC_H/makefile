@@ -1,9 +1,9 @@
 SF ?= 1
 ITER ?= 5
 DB := tpch_sf$(SF).duckdb
-QUERYDIR := sample_queries
-RESULTDIR := result
-EXCEL := TPCH_SF=$(SF).xlsx
+QUERYDIR := sample_queries_sf$(SF)
+RESULTDIR := result_sf$(SF)
+EXCEL := TPCH_SF.xlsx
 
 .PHONY : benchmark parse
 
@@ -40,7 +40,7 @@ benchmark: $(QUERYDIR)/q22.sql
 #4. write execute time in 
 parse:
 	@echo ">>> Parsing benchmark results"
-	SF=$(SF) python3 parse_elapsed_only.py
+	python3 parse_elapsed_only.py
 
 clean :
-	rm -rf $(DB) $(QUERYDIR) $(RESULTDIR) $(EXCEL)
+	rm -rf sample_queries_sf* result_sf* TPC_H_SF=*.xlsx
