@@ -1,10 +1,10 @@
 import os #디렉토리 탐색
 import pandas as pd #엑셀
 
-RESULT_DIR = "./result"
+SF = os.environ.get("SF", "unknown")
 
 #sf 값 가져오기. 없으면 unknown
-SF = os.environ.get("SF", "UNKNOWN")
+RESULT_DIR = f"./result_sf{SF}"
 
 data = {}
 
@@ -24,23 +24,23 @@ for filename in sorted(os.listdir(RESULT_DIR)):
 
             # 쿼리명 찾기
             # 예: Execution Name: ./sample_queries/q7.sql
-            if "Execution Name:" not in line:
+            if "Query:" not in line or "Elapsed:" not in line:
                 continue
+
 
             # q번호 추출
             # line.split("/")[-1] = q7.sql)
             # .split(".")[0] = q7
             query_part = line.split("/")[-1]
-            query_name = query_part.split(".")[0]  # q7
+            query_name = line.split("Query:")[1].split(",")[0].strip()
 
             # 실행시간 찾기
             # Elapsed: 1234567890 NanoSec
             if "Elapsed:" in line:
                 temp = line.split("Elapsed:")[1]
-                elapsed_ns = int(temp.split("NanoSec")[0].strip())
+                elapsed_ns = int(temp.split("ns")[0].strip())
 
                 elapsed_sec = elapsed_ns / 1_000_000_000
-
                 data[repeat_num][query_name] = elapsed_sec
 
 
