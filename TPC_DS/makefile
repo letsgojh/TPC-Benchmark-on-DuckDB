@@ -1,8 +1,8 @@
 SF ?= 1
 ITER ?= 5
 DB := tpcds_sf$(SF).duckdb
-QUERYDIR := sample_queries
-RESULTDIR := result
+QUERYDIR := sample_queries_sf$(SF)
+RESULTDIR := result_sf$(SF)
 EXCEL := TPCDS_SF=$(SF).xlsx
 
 .PHONY : benchmark parse
@@ -43,4 +43,4 @@ parse:
 	SF=$(SF) python3 parse_elapsed_only.py
 
 clean :
-	rm -rf $(DB) $(QUERYDIR) $(RESULTDIR) $(EXCEL)
+	rm -rf sample_queries_sf* result_sf* TPC_H_SF=*.xlsx
