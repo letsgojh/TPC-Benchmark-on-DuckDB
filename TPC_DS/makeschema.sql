@@ -1,6 +1,6 @@
 INSTALL tpcds;
 LOAD tpcds;
 
-CALL dbgen(sf={{SF}});
+CALL dsdgen(sf={{SF}});
 
 .quit
