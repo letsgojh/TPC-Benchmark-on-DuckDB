@@ -40,11 +40,20 @@ for ((r=1; r<=ITER; r++)); do
     qname=$(basename "$q" .sql)
     outfile="$repeatDir/${qname}.out"
 
-    echo -n "Repeat: $r/$ITER, Execution: $qname"
+    echo "Repeat: $r/$ITER, Execution: $qname"
 
     start=$(date +%s%N)
 
-    duckdb "$DBFILE" > "$outfile" <<EOF
+    perfFile="$RESULTROOT/repeat${r}_perf_all.txt"
+
+    echo "===== Repeat $r | Query $qname =====" >> "$perfFile"
+    
+    #perf stat은 stderr로 출력되므로 2>>$perfFile사용(>>는 누적), 2> 하면안된다.(여기서 2는 stderr를 가르킨다.)
+    sudo perf stat \
+      -e branches,branch-misses,instructions,cycles \
+      duckdb "$DBFILE" > "$outfile" 2>> "$perfFile" <<EOF
+      
+
 .timer on
 .headers on
 .mode column

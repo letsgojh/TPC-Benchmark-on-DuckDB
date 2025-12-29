@@ -41,6 +41,7 @@ benchmark: $(QUERYDIR)/q22.sql
 parse:
 	@echo ">>> Parsing benchmark results"
 	python3 parse_elapsed_only.py
+	python3 parse_branchmiss.py
 
 clean :
 	rm -rf sample_queries_sf* result_sf* TPC_H_SF=*.xlsx

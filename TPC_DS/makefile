@@ -25,7 +25,7 @@ $(QUERYDIR)/q99.sql: $(DB)
 		duckdb $(DB) -c "\
 		COPY ( \
 		  SELECT query \
-		  FROM tpch_queries() \
+		  FROM tpcds_queries() \
 		  WHERE query_nr = $$i \
 		) TO '$(QUERYDIR)/q$$i.sql' (HEADER false, QUOTE '');"; \
 	done
@@ -41,6 +41,7 @@ benchmark: $(QUERYDIR)/q99.sql
 parse:
 	@echo ">>> Parsing benchmark results"
 	SF=$(SF) python3 parse_elapsed_only.py
+	SF=$(SF) python3 parse_branchmiss.py
 
 clean :
-	rm -rf sample_queries_sf* result_sf* TPC_H_SF=*.xlsx
+	rm -rf sample_queries_sf* result_sf* TPC_DS_SF=*.xlsx branch_miss_summary_*.xlsx

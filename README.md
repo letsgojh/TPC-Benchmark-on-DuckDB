@@ -1,10 +1,21 @@
-# TPC-H,TPC-DS Benchmark on DuckDB - Setup Guide
+# TPC-H,TPC-DS Benchmark Framework for DuckDB
 
 
 ## Overview
 
-DuckDB를 이용한 TPC-H,TPC-DS benchmark 세팅 가이드라인입니다.
-dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키는 것을 도와줍니다.
+TPC-H/TPC-DS 쿼리를 DuckDB에서 자동 실행하여 DuckDB의 성능을 측정하는
+Benchmark 실행 프레임워크입니다.
+각 쿼리 실행에 대해 elapsed time, user CPU time, kernel CPU time,
+그리고 branch miss 등의 하드웨어 성능 지표를 함께 기록합니다.
+
+- **Elapsed Time**
+  - Wall-clock execution time per query
+- **User CPU Time**
+  - Time spent executing in user mode per query
+- **Kernel CPU Time**
+  - Time spent executing in kernel mode per query
+- **Branch Misses**
+  - Number of branch mispredictions during each query execution
 
 
 ## 0. clone this repository
@@ -32,7 +43,7 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 
 ## 2. select the benchmark program that you want
 
-- TPC-H와 TPC-DS중 Benchmark를 원하는 디렉토리로 접근한다
+- TPC-H와 TPC-DS중 Benchmark를 원하는 디렉토리로 접근합니다.
 
     ```bash
         //1. select TPC_DS
@@ -49,7 +60,9 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 | make SF= {SF}| duckdb내에 TPC 관련 schema와 query들을 생성합니다.(SF값을 입력하지 않는다면 자동으로 1로 실행됩니다.)| make SF=10 |
 | make queries SF={SF}| duckdb내에 있는 query들을 외부 sample_queries 디렉토리로 옮겨 적습니다. | make querie SF={SF}|
 | make benchmark SF= {SF} ITER= {ITER} | benchmarking를 ITER 횟수만큼 반복 실행합니다. 실행된 결과를 기록하여 result 디렉토리 내에 저장합니다. | make benchmark SF=30 ITER=20 |
-| make parse SF={SF}| result 디렉토리 내에 있는 정보를 excel 파일로 생성합니다. | make parse SF=10 |
+| make parse SF={SF}| result 디렉토리 내에 있는 elapsed time에 대한 정보를 excel 파일로 생성합니다. 또한 각 쿼리마다 branch miss ratio와 kernel cpu time, user cpu time을  기록해주는 excel file을 생성합니다. | make parse SF=10 |
 | make clean| 생성된 sample_queries,result 디렉토리와 excel 파일을 삭제합니다. | make clean |
 
-- make SF=<SF> -> make queries -> make benchmark ITER=<ITER> -> make parse 순으로 실행시키시면됩니다.
+> make SF={SF} -> make queries SF={SF} -> make benchmark SF={SF} ITER={ITER} -> make parse SF={SF} 순으로 실행시키시면됩니다.
+
+> TPC_DS와 TPC_H 디렉토리 내에는 하나의 .duckdb 파일만 존재해야합니다.
