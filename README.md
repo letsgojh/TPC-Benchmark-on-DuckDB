@@ -1,4 +1,4 @@
-# TPC-H,TPC-DS Benchmark on DuckDB - Setup Guide**
+# TPC-H,TPC-DS Benchmark on DuckDB - Setup Guide
 
 
 ## Overview
@@ -20,7 +20,7 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 
 - duckdb를 설치하는 여러가지 방법이 있지만, ubuntu의 패키지 매니저인 apt를 통해 설치하였습니다.
 - apt이외에 직접 duckdb 홈페이지에서 설치하는 방법도 있습니다.
-
+    ```bash
     sudo apt install duckdb
 
     //설치되었다면 어느 디렉토리에 위치하는지 확인합니다.
@@ -28,6 +28,7 @@ dataset을 생성하고, makefile을 통해 benchmark queries들을 실행시키
 
     //version을 확인합니다.
     duckdb --version
+    ```
 
 ## 2. select the benchmark program that you want
 
